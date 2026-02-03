@@ -1,0 +1,50 @@
+x-app-base: &app-base
+  build:
+    context: .
+    args:
+      - DEV=true
+  volumes:
+    - .:/app
+  env_file:
+    - .env
+  depends_on:
+    - db
+    - redis
+
+services:
+  db:
+    image: postgres:18.1-alpine
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: smart_spend_db
+
+  redis:
+    image: redis:8.4-alpine
+    ports:
+      - "6380:6379"
+
+  web:
+    <<: *app-base
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+
+  celery_worker:
+    <<: *app-base
+    command: celery -A config worker -l info
+
+  celery_beat:
+    <<: *app-base
+    command: celery -A config beat -l info
+
+  bot:
+    <<: *app-base
+    command: python bot/main.py
+
+volumes:
+  postgres_data:
