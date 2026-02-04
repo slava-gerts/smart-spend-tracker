@@ -8,12 +8,12 @@ from apps.core.decorators import require_family_access, require_profile
 
 
 @require_family_access
-def dummy_family_action(telegram_id, family_id):
+def dummy_family_action(telegram_id, family_id, profile=None):
 	return "Success"
 
 
 @require_profile
-def dummy_profile_action(telegram_id):
+def dummy_profile_action(telegram_id, profile=None):
 	return "Success"
 
 

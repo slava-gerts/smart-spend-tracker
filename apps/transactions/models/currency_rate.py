@@ -14,6 +14,9 @@ class CurrencyRate(models.Model):
 
 	class Meta:
 		unique_together = ('from_currency', 'to_currency', 'date')
+		indexes = [
+			models.Index(fields=['from_currency', 'to_currency', '-date'])
+		]
 
 	def __str__(self):
 		return f"{self.from_currency} to {self.to_currency}: {self.rate}"

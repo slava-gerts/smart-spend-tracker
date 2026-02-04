@@ -16,7 +16,7 @@ def require_family_access(func):
 		if not Family.objects.filter(id=family_id, members=profile).exists():
 			raise PermissionDenied('You are not a member of this family')
 
-		return func(telegram_id, family_id, *args, **kwargs)
+		return func(telegram_id, family_id, *args, profile=profile, **kwargs)
 
 	return wrapper
 
@@ -24,9 +24,11 @@ def require_family_access(func):
 def require_profile(func):
 	@wraps(func)
 	def wrapper(telegram_id, *args, **kwargs):
-		if not Profile.objects.filter(telegram_id=telegram_id).exists():
+		try:
+			profile = Profile.objects.get(telegram_id=telegram_id)
+		except Profile.DoesNotExist:
 			raise PermissionDenied('User profile not found. Please start the bot first.')
 
-		return func(telegram_id, *args, **kwargs)
+		return func(telegram_id, *args, profile=profile, **kwargs)
 
 	return wrapper

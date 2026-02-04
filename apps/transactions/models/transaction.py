@@ -26,5 +26,11 @@ class Transaction(models.Model):
 
 	created_at = models.DateTimeField(auto_now_add=True)
 
+	class Meta:
+		indexes = [
+			models.Index(fields=['profile', '-date']),
+			models.Index(fields=['family', '-date']),
+		]
+
 	def __str__(self):
 		return f"{self.amount} {self.currency} - {self.category.name}"
