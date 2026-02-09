@@ -24,11 +24,15 @@ def require_family_access(func):
 def require_profile(func):
 	@wraps(func)
 	def wrapper(telegram_id, *args, **kwargs):
-		try:
-			profile = Profile.objects.get(telegram_id=telegram_id)
-		except Profile.DoesNotExist:
-			raise PermissionDenied('User profile not found. Please start the bot first.')
+		profile = kwargs.get('profile')
+		
+		if profile is None:
+			try:
+				profile = Profile.objects.get(telegram_id=telegram_id)
+			except Profile.DoesNotExist:
+				raise PermissionDenied('User profile not found. Please start the bot first.')
 
-		return func(telegram_id, *args, profile=profile, **kwargs)
+		kwargs['profile'] = profile
+		return func(telegram_id, *args, **kwargs)
 
 	return wrapper

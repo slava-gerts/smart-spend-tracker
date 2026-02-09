@@ -2,6 +2,7 @@ from decimal import Decimal
 
 from django.utils import timezone
 
+from apps.ai.parser import ExpenseParser
 from apps.core.decorators import require_profile
 from apps.transactions.models import Category, CurrencyRate, Transaction
 from apps.users.models import Family, Profile
@@ -49,3 +50,25 @@ class TransactionService:
 		)
 
 		return transaction
+
+
+	@staticmethod
+	def process_raw_message(telegram_id, text, family_id=None):
+		parser = ExpenseParser()
+		extracted = parser.parse_text(text)
+		
+		profile = Profile.objects.get(telegram_id=telegram_id)
+
+		currency = extracted.currency or profile.base_currency
+
+		return TransactionService.create_transaction(
+			telegram_id=telegram_id,
+			amount=extracted.amount,
+			currency=currency,
+			category_name=extracted.category,
+			description=extracted.description or '',
+			family_id=family_id,
+			raw_text=text,
+			date=extracted.date,
+			profile=profile
+		)
