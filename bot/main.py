@@ -16,6 +16,7 @@ from aiogram import Bot, Dispatcher
 
 from bot.callbacks import router as callback_router
 from bot.handlers import router
+from bot.settings_handlers import router as settings_router
 
 logging.basicConfig(level=logging.INFO)
 
@@ -23,6 +24,7 @@ bot = Bot(token=settings.TELEGRAM_BOT_TOKEN)
 dp = Dispatcher()
 
 async def main():
+	dp.include_router(settings_router)
 	dp.include_router(router)
 	dp.include_router(callback_router)
 	

@@ -10,6 +10,8 @@ class Profile(models.Model):
 
 	base_currency = models.CharField(max_length=3, choices=CurrencyChoices.choices, default=CurrencyChoices.EUR)
 
+	timezone = models.CharField(max_length=50, default='UTC')
+
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
