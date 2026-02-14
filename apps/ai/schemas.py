@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -10,3 +10,7 @@ class ExpenseExtraction(BaseModel):
 	category: str = Field(description="Category of the expense (Food, Transport, etc.)")
 	description: Optional[str] = Field(default=None, description="Description of the expense")
 	date: Optional[datetime.date] = Field(default=None, description="Date of the expense (if provided, otherwise null)")
+
+
+class ExpenseList(BaseModel):
+	expenses: List[ExpenseExtraction]

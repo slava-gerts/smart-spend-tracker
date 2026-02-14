@@ -40,7 +40,7 @@ services:
 
   celery_beat:
     <<: *app-base
-    command: celery -A config beat -l info
+    command: celery -A config beat -l info -s /tmp/celerybeat-schedule
 
   bot:
     <<: *app-base
