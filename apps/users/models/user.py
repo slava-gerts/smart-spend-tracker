@@ -12,6 +12,15 @@ class Profile(models.Model):
 
 	timezone = models.CharField(max_length=50, default='UTC')
 
+	active_family = models.ForeignKey(
+		'Family',
+		null=True,
+		blank=True,
+		on_delete=models.SET_NULL,
+		related_name="active_in_profiles",
+		help_text="The family currently selected for recording expenses"
+	)
+
 	created_at = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):

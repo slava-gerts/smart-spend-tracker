@@ -1,3 +1,4 @@
+import pytz
 from decimal import Decimal
 
 from django.utils import timezone
@@ -15,7 +16,8 @@ class TransactionService:
 
 		extractions = ExpenseParser().parse_text(text).expenses
 
-		family = TransactionService._get_family_if_exists(family_id)
+		effective_family_id = family_id or (profile.active_family.id if profile.active_family else None)
+		family = TransactionService._get_family_if_exists(effective_family_id)
 
 		categories = TransactionService._get_or_create_categories_bulk(profile, extractions)
 		rates = TransactionService._get_exchange_rates_bulk(profile.base_currency, extractions)
@@ -56,6 +58,9 @@ class TransactionService:
 
 	@staticmethod
 	def _save_transactions_bulk(profile, family, categories, rates, extractions, raw_text):
+		user_tz = pytz.timezone(profile.timezone)
+		current_date = timezone.now().astimezone(user_tz).date()
+
 		transactions = [
 			Transaction(
 				profile=profile,
@@ -66,7 +71,7 @@ class TransactionService:
 				currency=item.currency or profile.base_currency,
 				description=item.description or '',
 				raw_text=raw_text,
-				date=item.date or timezone.now().date()
+				date=item.date or current_date
 			)
 			for item in extractions
 		]

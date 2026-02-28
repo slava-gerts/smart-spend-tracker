@@ -13,7 +13,12 @@ class CurrencyRate(models.Model):
 	updated_at = models.DateTimeField(auto_now=True)
 
 	class Meta:
-		unique_together = ('from_currency', 'to_currency', 'date')
+		constraints = [
+			models.UniqueConstraint(
+				fields=['from_currency', 'to_currency', 'date'],
+				name='unique_currency_rate_per_day'
+			)
+		]
 		indexes = [
 			models.Index(fields=['from_currency', 'to_currency', '-date'])
 		]

@@ -1,3 +1,4 @@
+import logging
 import requests
 
 from decimal import Decimal
@@ -8,8 +9,11 @@ from django.utils import timezone
 from apps.transactions.models import CurrencyRate
 
 
-@shared_task(name='apps.transactions.tasks.update_currency_rates')
-def update_currency_rates():
+logger = logging.getLogger(__name__)
+
+
+@shared_task(name='apps.transactions.tasks.update_currency_rates', bind=True, max_retries=3)
+def update_currency_rates(self):
 	base_currency = 'EUR'
 	target_currencies = ['RSD', 'USD', 'RUB', 'EUR']
 
@@ -35,4 +39,5 @@ def update_currency_rates():
 
 		return "Currency rates updated successfully"
 	except Exception as e:
-		return f"Error updating rates: {str(e)}"
+		logger.error(f"Error updating currency rates: {e}")
+		raise self.retry(exc=e, countdown=60)

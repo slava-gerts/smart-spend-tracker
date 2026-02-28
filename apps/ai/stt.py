@@ -13,7 +13,6 @@ class STTService:
 				file=file,
 				model="whisper-large-v3",
 				response_format="text",
-				language="en"
 			)
 
 			return transcription

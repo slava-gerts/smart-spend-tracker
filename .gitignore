@@ -16,3 +16,7 @@ staticfiles/
 
 # OS
 .DS_Store
+
+#Celery
+celerybeat-schedule
+celerybeat.pid

@@ -1,7 +1,6 @@
 from django.db import models
 
 from apps.users.models import Profile
-from apps.core.choices import CurrencyChoices
 
 class Category(models.Model):
 	name = models.CharField(max_length=50)
@@ -10,7 +9,12 @@ class Category(models.Model):
 
 	class Meta:
 		verbose_name_plural = 'Categories'
-		unique_together = ('name', 'user')
+		constraints = [
+			models.UniqueConstraint(
+				fields=['name', 'user'],
+				name='unique_category_per_user'
+			)
+		]
 
 	def __str__(self):
 		return f"{self.name} ({self.user.user.username})"
