@@ -22,7 +22,7 @@ fi
 # --- Stage 2: Final runtime image ---
 FROM python:3.13-slim
 
-RUN apt-get update && apt-get install -y libpq5 fonts-dejavu-core && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y libpq5 fonts-dejavu-core supervisor && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -34,3 +34,7 @@ RUN pip install --no-cache-dir /wheels/*
 COPY . .
 
 EXPOSE 8000
+
+RUN python manage.py collectstatic --noinput || true
+
+CMD ["/usr/bin/supervisord", "-c", "/app/supervisord.conf"]
